@@ -48,6 +48,10 @@ Las pruebas unitarias cubren conexión, espera de Telegram, velocidad, reanudaci
 
 Ejecuta `connectedDebugAndroidTest` **solo en un emulador de pruebas desechable**: el runner puede desinstalar la aplicación al terminar y borrar la sesión local. Para pruebas manuales en una TV vinculada, utiliza `install -r`.
 
+## Publicación
+
+Para detalles sobre cómo firmar la aplicación y subirla a la Google Play Store, consulta la [Guía de Publicación](PUBLISHING.md). La política de privacidad requerida ya está disponible en `docs/privacy.html` (y en línea a través de GitHub Pages).
+
 ## Dependencias y licencias
 
 TDLib Java/JNI: [TGX-Android/tdlib](https://github.com/TGX-Android/tdlib), revisión `b47cd822037a4c38916f0b78f57298f10a88821e`, con OpenSSL. No incluye la interfaz de Telegram X. Antes de distribuir, validar este bundle o sustituirlo por una compilación reproducible de TDLib oficial. Licencia en `libs/tdlib/LICENCE`.
