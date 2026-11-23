@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;-webkit-font-smoothing:antialiased;overflow:hidden}
+a{color:#F3F2EF}a:hover{color:#FFFFFF}
+@keyframes mcRise{from{opacity:0;transform:translateY(28px);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes mcWipeR{from{clip-path:inset(0 0 0 100%);transform:scale(1.05)}to{clip-path:inset(0 0 0 0);transform:scale(1)}}
+@keyframes mcWipeL{from{clip-path:inset(0 100% 0 0);transform:scale(1.05)}to{clip-path:inset(0 0 0 0);transform:scale(1)}}
+@keyframes mcWipeD{from{clip-path:inset(100% 0 0 0);transform:scale(1.05)}to{clip-path:inset(0 0 0 0);transform:scale(1)}}
+@keyframes mcWipeU{from{clip-path:inset(0 0 100% 0);transform:scale(1.05)}to{clip-path:inset(0 0 0 0);transform:scale(1)}}
+@keyframes mcDrift{from{transform:scale(1.02) translateX(0)}to{transform:scale(1.1) translateX(-36px)}}
+@keyframes mcPop{0%{opacity:0;transform:translateY(12px) scale(.8)}20%{opacity:1;transform:translateY(0) scale(1.06)}100%{opacity:0;transform:translateY(-48px) scale(1)}}
+@keyframes mcBreath{0%,100%{box-shadow:0 0 0 0 color-mix(in oklch,var(--accent) 50%,transparent),0 18px 50px rgba(0,0,0,.55)}50%{box-shadow:0 0 0 12px color-mix(in oklch,var(--accent) 0%,transparent),0 18px 50px rgba(0,0,0,.55)}}
+</style>
+</helmet>
+<div style="--accent: {{ accent }}; position:fixed; inset:0; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden; font-family:'Figtree',sans-serif; color:#F3F2EF;">
+<div ref="{{ stageRef }}" data-screen-label="Mi Cine TV" style="position:relative; flex:none; width:1920px; height:1080px; overflow:hidden; background:#0E0E11; transform: scale({{ scale }});">
+
+  {{ backdrop }}
+  <div style="position:absolute; inset:0; background:rgba(14,14,17,.35); transition:opacity 600ms ease; opacity: {{ dimO }};"></div>
+  <div style="position:absolute; inset:0; background:linear-gradient(90deg,#0E0E11 0%,rgba(14,14,17,.85) 32%,rgba(14,14,17,.1) 72%); transition:opacity 600ms ease; opacity: {{ leftO }};"></div>
+  <div style="position:absolute; inset:0; background:linear-gradient(0deg,#0E0E11 0%,#0E0E11 34%,rgba(14,14,17,0) 66%); transition:opacity 700ms ease; opacity: {{ bottomO }};"></div>
+
+  <div style="position:absolute; inset:0; background:#0E0E11; transition:opacity 450ms ease; opacity: {{ exO }};"></div>
+  <div style="position:absolute; left:96px; right:96px; top:54px; height:64px; display:flex; align-items:center; gap:64px; transition:opacity 400ms ease, transform 500ms cubic-bezier(.2,.9,.1,1); opacity: {{ topO }}; transform: translateY({{ topY }}px);">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div style="width:28px; height:28px; border-radius:8px; background:var(--accent,#F2A93B);"></div>
+      <div style="font-size:36px; font-weight:800; letter-spacing:-0.5px;">Mi Cine</div>
+    </div>
+    <div style="display:flex; gap:16px; flex:1;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+        <div data-focus="{{ t.foc }}" style="position:relative; padding:8px 20px; border-radius:12px; font-size:28px; font-weight: {{ t.w }}; color: {{ t.fg }}; background: {{ t.bg }}; transform: {{ t.tf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease, color 200ms ease;">{{ t.name }}<div style="position:absolute; left:50%; bottom:-6px; width:28px; height:4px; margin-left:-14px; border-radius:2px; background: {{ t.bar }};"></div></div>
+      </sc-for>
+    </div>
+    <div style="display:flex; gap:20px;">
+      <div data-focus="{{ searchFoc }}" style="width:64px; height:64px; border-radius:32px; display:flex; align-items:center; justify-content:center; background: {{ searchBg }}; color: {{ searchFg }}; transform: {{ searchTf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease;"><svg width="30" height="30" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"></circle><line x1="15" y1="15" x2="21" y2="21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></line></svg></div>
+      <div data-focus="{{ avFoc }}" style="width:64px; height:64px; border-radius:32px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; background: {{ avBg }}; color: {{ avFg }}; transform: {{ avTf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease;">D</div>
+    </div>
+  </div>
+
+  {{ info }}
+
+  <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+    <div style="position:absolute; left:0; top:0; width:1920px; height:300px; transition:transform 560ms cubic-bezier(.2,.9,.1,1), opacity 420ms ease; transform: {{ row.tf }}; opacity: {{ row.o }};">
+      <div style="position:absolute; left:96px; top:0; display:flex; align-items:baseline; gap:12px; font-size:32px; line-height:38px; white-space:nowrap;"><span style="font-weight:700;">{{ row.name }}</span><span style="color:#A9A8B0; font-weight:500;">· {{ row.src }}</span><span style="margin-left:16px; font-size:24px; font-weight:600; color:#A9A8B0;">{{ row.counter }}</span></div>
+      <sc-for list="{{ row.cards }}" as="c" hint-placeholder-count="6">
+        <div style="position:absolute; left:0; top:52px; width:330px; transform-origin:center 93px; transition:transform 480ms cubic-bezier(.2,.9,.1,1), opacity 320ms ease; transform: {{ c.tf }}; opacity: {{ c.o }};">
+          <div style="position:relative; width:330px; height:186px; border-radius:12px; overflow:hidden; background: {{ c.bg }};">
+            <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:24px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:18px; line-height:1.35; color:#9897A0;">{{ c.ph }}</div>
+            <div style="position:absolute; right:10px; bottom:14px; font-size:24px; font-weight:600; background:rgba(10,10,12,.85); padding:2px 10px; border-radius:8px;">{{ c.d }}</div>
+            <sc-if value="{{ c.hasP }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; left:0; right:0; bottom:0; height:6px; background:rgba(255,255,255,.18);"><div style="height:6px; background:var(--accent,#F2A93B); width: {{ c.pw }};"></div></div></sc-if>
+          </div>
+          <div style="margin-top:14px; font-size:24px; line-height:30px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color 200ms ease; font-weight: {{ c.tw }}; color: {{ c.tc }};">{{ c.t }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-for>
+
+  <sc-if value="{{ isExplore }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; left:96px; top:166px; font-size:32px; font-weight:700;">Canales</div>
+    <div style="position:absolute; left:96px; top:230px; width:520px; display:flex; flex-direction:column; gap:10px;">
+      <sc-for list="{{ exChannels }}" as="c" hint-placeholder-count="8">
+        <div style="height:88px; border-radius:14px; padding:0 24px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:center; gap:2px; background: {{ c.bg }}; transform: {{ c.tf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease;">
+          <div style="font-size:28px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: {{ c.fg }};">{{ c.name }}</div>
+          <div style="font-size:24px; color: {{ c.mc }};">{{ c.meta }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:absolute; left:680px; right:96px; top:160px; display:flex; flex-direction:column; gap:6px;">
+      <div style="font-size:44px; font-weight:800; letter-spacing:-0.5px;">{{ exName }}</div>
+      <div style="font-size:24px; color:#A9A8B0;">{{ exMeta }}</div>
+    </div>
+    <div style="position:absolute; left:660px; right:0; top:280px; height:460px; overflow:hidden;">
+      <div style="display:flex; gap:96px; padding:20px 0 0 20px; transition:transform 620ms cubic-bezier(.2,.9,.1,1); transform: translateX({{ exX }}px);">
+        <sc-for list="{{ exPages }}" as="pg" hint-placeholder-count="1">
+          <div style="flex:none; width:1144px; display:grid; grid-template-columns:repeat(4,268px); grid-auto-rows:193px; column-gap:24px; row-gap:24px; align-content:start; transition:opacity 420ms ease; opacity: {{ pg.o }};">
+            <sc-for list="{{ pg.items }}" as="g" hint-placeholder-count="8">
+              <div style="width:268px; transform-origin:134px 75.5px; transition:transform 300ms cubic-bezier(.3,1.4,.5,1); transform: {{ g.tf }};">
+                <div style="position:relative; width:268px; height:151px; border-radius:12px; overflow:hidden; background: {{ g.bg }};">
+                  <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:17px; line-height:1.35; color:#9897A0;">{{ g.ph }}</div>
+                  <div style="position:absolute; right:10px; bottom:10px; font-size:24px; font-weight:600; background:rgba(10,10,12,.85); padding:2px 10px; border-radius:8px;">{{ g.badge }}</div>
+                </div>
+                <div style="margin-top:12px; font-size:24px; line-height:30px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight: {{ g.tw }}; color: {{ g.tc }};">{{ g.t }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="position:absolute; left:680px; right:96px; top:790px; display:flex; align-items:center; gap:16px;">
+      <sc-for list="{{ exPager }}" as="p" hint-placeholder-count="5">
+        <div data-focus="{{ p.foc }}" style="position:relative; min-width:64px; height:64px; padding:0 22px; box-sizing:border-box; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight: {{ p.w }}; background: {{ p.bg }}; color: {{ p.fg }}; transform: {{ p.tf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease, color 200ms ease;">{{ p.label }}<div style="position:absolute; left:50%; bottom:8px; width:24px; height:4px; margin-left:-12px; border-radius:2px; background: {{ p.bar }};"></div></div>
+      </sc-for>
+      <div style="margin-left:auto; font-size:24px; color:#A9A8B0;">{{ exPageTxt }}</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPhoto }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; left:96px; top:54px; display:flex; flex-direction:column; gap:4px; padding:18px 28px; border-radius:16px; background:rgba(14,14,17,.82);">
+      <div style="font-size:24px; color:#A9A8B0;">{{ phCh }} · {{ phCount }}</div>
+      <div style="font-size:40px; font-weight:800;">{{ phTitle }}</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute; left:96px; top:560px; display:flex; flex-direction:column; gap:14px;">
+      <div style="font-size:44px; font-weight:800;">Aún no hay fotos</div>
+      <div style="font-size:28px; color:#A9A8B0;">Sube fotos a un canal privado y aparecerán aquí</div>
+    </div>
+  </sc-if>
+
+  <div style="position:absolute; left:96px; bottom:110px; width:1000px; display:flex; flex-direction:column; gap:36px; transition:opacity 420ms ease, transform 620ms cubic-bezier(.2,.9,.1,1); opacity: {{ dO }}; transform: translateY({{ dY }}px);">
+    <div style="font-size:28px; line-height:1.4; color:#C9C8CF; text-wrap:pretty;">{{ sel.desc }}</div>
+    <div style="display:flex; gap:28px;">
+      <sc-for list="{{ dBtns }}" as="b" hint-placeholder-count="2">
+        <div data-focus="{{ b.foc }}" style="display:flex; align-items:center; gap:14px; height:72px; padding:0 36px; border-radius:14px; font-size:28px; font-weight:700; background: {{ b.bg }}; color: {{ b.fg }}; transform: {{ b.tf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease, color 200ms ease;">
+          <sc-if value="{{ b.play }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z" fill="currentColor"></path></svg></sc-if>{{ b.label }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="position:absolute; left:0; right:0; bottom:0; height:560px; background:linear-gradient(0deg,rgba(10,10,12,.95) 0%,rgba(10,10,12,.7) 55%,rgba(10,10,12,0) 100%); transition:opacity 500ms ease; opacity: {{ pO }};"></div>
+  <div style="position:absolute; left:96px; right:96px; bottom:54px; display:flex; flex-direction:column; gap:20px; transition:opacity 500ms ease, transform 600ms cubic-bezier(.2,.9,.1,1); opacity: {{ pO }}; transform: translateY({{ pY }}px);">
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <div style="font-size:24px; font-weight:600; color:#D6D5DA;">{{ sel.ch }} · {{ sel.src }}</div>
+      <div style="font-size:48px; font-weight:800; letter-spacing:-0.5px;">{{ sel.t }}</div>
+    </div>
+    <div style="position:relative; height:28px; display:flex; align-items:center; margin-top:8px;">
+      <div style="position:absolute; left:0; right:0; height:10px; border-radius:5px; background:#3A3A42;"></div>
+      <div style="position:absolute; left:0; height:10px; border-radius:5px; background:#9C9BA3; transition:width 400ms linear; width: {{ pBuf }};"></div>
+      <div style="position:absolute; left:0; height:10px; border-radius:5px; background:var(--accent,#F2A93B); transition:width 260ms linear; width: {{ pPlay }};"></div>
+      <div style="position:absolute; width:28px; height:28px; margin-left:-14px; border-radius:14px; background:#F3F2EF; transition:left 260ms linear; left: {{ pPlay }};"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:28px; font-weight:600;">
+      <div>{{ tCur }}</div>
+      <div style="display:flex; gap:28px; font-size:24px; font-weight:500; color:#A9A8B0;">
+        <div style="display:flex; align-items:center; gap:10px;"><div style="width:16px; height:16px; border-radius:4px; background:var(--accent,#F2A93B);"></div>Reproducido</div>
+        <div style="display:flex; align-items:center; gap:10px;"><div style="width:16px; height:16px; border-radius:4px; background:#9C9BA3;"></div>Descargado</div>
+        <div style="display:flex; align-items:center; gap:10px;"><div style="width:16px; height:16px; border-radius:4px; background:#3A3A42;"></div>Pendiente</div>
+      </div>
+      <div>{{ tTot }}</div>
+    </div>
+    <div style="display:flex; justify-content:center; align-items:center; gap:56px; margin-top:4px;">
+      <sc-for list="{{ pBtns }}" as="b" hint-placeholder-count="3">
+        <div data-focus="{{ b.foc }}" style="width:104px; height:104px; border-radius:52px; display:flex; align-items:center; justify-content:center; gap:12px; font-size:30px; font-weight:800; background: {{ b.bg }}; color: {{ b.fg }}; transform: {{ b.tf }}; transition:transform 300ms cubic-bezier(.3,1.4,.5,1), background 200ms ease, color 200ms ease;">
+          <sc-if value="{{ b.isPause }}" hint-placeholder-val="{{ false }}"><div style="width:12px; height:40px; border-radius:3px; background:currentColor;"></div><div style="width:12px; height:40px; border-radius:3px; background:currentColor;"></div></sc-if>
+          <sc-if value="{{ b.isPlay }}" hint-placeholder-val="{{ false }}"><svg width="40" height="40" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"></path></svg></sc-if>
+          {{ b.label }}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  {{ flashes }}
+
+  <div style="position:absolute; pointer-events:none; border:4px solid var(--accent,#F2A93B); box-sizing:border-box; animation:mcBreath 2.4s ease-in-out infinite; left: {{ lx }}px; top: {{ ly }}px; width: {{ lw }}px; height: {{ lh }}px; border-radius: {{ lr }}px; opacity: {{ lo }}; transition: {{ lensTr }};"></div>
+
+  <div style="position:absolute; right:96px; display:flex; gap:28px; align-items:center; padding:12px 24px; border-radius:16px; background:rgba(14,14,17,.82); font-size:24px; color:#C9C8CF; transition:opacity 400ms ease; top: {{ hTop }}; bottom: {{ hBot }}; opacity: {{ hO }};">
+    <sc-for list="{{ hints }}" as="hn" hint-placeholder-count="3">
+      <div style="display:flex; align-items:center; gap:10px;"><span style="padding:2px 10px; border-radius:8px; background:#2A2A31; color:#F3F2EF; font-weight:700;">{{ hn.k }}</span><span>{{ hn.t }}</span></div>
+    </sc-for>
+  </div>
+</div>
+
+<sc-if value="{{ showRemote }}" hint-placeholder-val="{{ true }}">
+  <div style="position:fixed; right:20px; bottom:20px; display:flex; flex-direction:column; align-items:center; gap:10px; padding:14px; border-radius:22px; background:rgba(28,28,32,.94); border:1px solid #34343C; font-family:'Figtree',sans-serif; user-select:none;">
+    <div style="display:grid; grid-template-columns:repeat(3,44px); grid-template-rows:repeat(3,44px); gap:6px;">
+      <div></div>
+      <div onClick="{{ onUp }}" style="border-radius:12px; background:#2A2A31; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#F3F2EF; font-size:16px;" style-hover="background:#3A3A42">▲</div>
+      <div></div>
+      <div onClick="{{ onLeft }}" style="border-radius:12px; background:#2A2A31; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#F3F2EF; font-size:16px;" style-hover="background:#3A3A42">◀</div>
+      <div onClick="{{ onOk }}" style="border-radius:22px; background:var(--accent,#F2A93B); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#111114; font-size:14px; font-weight:800;">OK</div>
+      <div onClick="{{ onRight }}" style="border-radius:12px; background:#2A2A31; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#F3F2EF; font-size:16px;" style-hover="background:#3A3A42">▶</div>
+      <div></div>
+      <div onClick="{{ onDown }}" style="border-radius:12px; background:#2A2A31; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#F3F2EF; font-size:16px;" style-hover="background:#3A3A42">▼</div>
+      <div></div>
+    </div>
+    <div onClick="{{ onBack }}" style="width:100%; height:36px; border-radius:12px; background:#2A2A31; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#F3F2EF; font-size:14px; font-weight:600;" style-hover="background:#3A3A42">Atrás</div>
+    <div style="font-size:12px; color:#8D8C95;">o usa las flechas, Enter y Esc</div>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#F2A93B&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#F2A93B&quot;,&quot;#FF6B5A&quot;,&quot;#3FD07F&quot;,&quot;#B79CFF&quot;]},&quot;motion&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Expresivo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;Expresivo&quot;,&quot;Sutil&quot;]},&quot;showRemote&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const h = React.createElement;
+const CW = 330, CH = 186, PITCH = 358, ROWP = 300, ROWY = 548, X0 = 96;
+const fmtMin = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')} min` : `${m} min`;
+const fmtT = s => { s = Math.max(0, Math.round(s)); const hh = Math.floor(s / 3600), mm = Math.floor(s % 3600 / 60), ss = s % 60; return hh ? `${hh}:${String(mm).padStart(2, '0')}:${String(ss).padStart(2, '0')}` : `${mm}:${String(ss).padStart(2, '0')}`; };
+const stripes = (hue, w) => `repeating-linear-gradient(135deg, oklch(0.25 0.035 ${hue}) 0 ${w}px, oklch(0.285 0.04 ${hue}) ${w}px ${w * 2}px)`;
+let uid = 0;
+const it = (t, mins, ch, src, hue, tags, desc, prog = 0) => ({ id: 'i' + (uid++), t, mins, ch, src, hue, tags, desc, prog });
+const PV = 'Canal privado', MG = 'Mensajes guardados';
+const ROWS = [
+  { name: 'Seguir viendo', src: 'Tu progreso', cat: 0, cards: [
+    it('Carnaval de Santa Cruz 2026', 125, 'Viajes', MG, 35, ['#carnaval', '#santacruz', '#2026'], 'El corso completo por la avenida Monseñor Rivero: comparsas, bandas y la coronación de la reina.', .45),
+    it('Lago Titicaca: dos días en la Isla del Sol', 72, 'Viajes', MG, 235, ['#viajes', '#2026', '#titicaca'], 'Lancha desde Copacabana al amanecer, subida por la escalera del Inca y noche en Yumani. Segundo día: caminata hasta Challapampa.', .43),
+    it('Cocina con la abuela · Cap. 3', 22, 'Series', PV, 70, ['#familia', '#recetas'], 'Sopa de maní como se hace en Cochabamba, paso a paso y sin apuros.', .7),
+    it('Samaipata: El Fuerte', 32, 'Viajes', MG, 140, ['#samaipata', '#viajes'], 'Recorrido por las ruinas al atardecer y vista del valle desde el mirador.', .2) ] },
+  { name: 'Películas', src: PV, cat: 1, cards: [
+    it('Chuquiago', 87, 'Películas', PV, 20, ['#cine', '#lapaz'], 'Cuatro historias de La Paz, desde la ladera hasta la zona sur.'),
+    it('Utama', 87, 'Películas', PV, 60, ['#cine', '#altiplano'], 'Una pareja de ancianos en el altiplano enfrenta la sequía.'),
+    it('Zona Sur', 109, 'Películas', PV, 300, ['#cine'], 'Una familia acomodada de La Paz y la casa que empieza a desmoronarse.'),
+    it('Yvy Maraey', 107, 'Películas', PV, 150, ['#cine', '#chaco'], 'Un cineasta viaja al Chaco en busca de la tierra sin mal.'),
+    it('El gran movimiento', 85, 'Películas', PV, 260, ['#cine', '#lapaz'], 'Un joven minero llega a La Paz y la ciudad lo va enfermando.'),
+    it('Carga sellada', 110, 'Películas', PV, 0, ['#cine'], 'Un tren con carga tóxica cruza el altiplano sin lugar donde detenerse.') ] },
+  { name: 'Viajes', src: MG, cat: 3, cards: [
+    it('Salar de Uyuni al amanecer', 18, 'Viajes', MG, 220, ['#uyuni', '#viajes', '#2026'], 'El espejo del salar en temporada de lluvias, desde la isla Incahuasi.'),
+    it('Isla del Sol en kayak', 24, 'Viajes', MG, 200, ['#titicaca', '#viajes'], 'Remando desde Yumani hasta la playa de Challa con el lago en calma.'),
+    it('Amboró, sendero de los helechos', 41, 'Viajes', MG, 145, ['#amboro', '#viajes'], 'Caminata entre helechos gigantes con guía de La Yunga.'),
+    it('Tiwanaku con la familia', 27, 'Viajes', MG, 50, ['#familia', '#viajes'], 'La Puerta del Sol y el museo, con los primos y la tía Rosa.'),
+    it('Copacabana desde el Calvario', 12, 'Viajes', MG, 250, ['#titicaca'], 'Subida al cerro Calvario para ver el atardecer sobre el lago.'),
+    it('Salto del Jardín de las Delicias', 14, 'Viajes', MG, 160, ['#amboro', '#samaipata'], 'Tres caídas de agua y un baño helado después de la caminata.') ] },
+  { name: 'Series', src: PV, cat: 2, cards: [
+    it('Cocina con la abuela · Cap. 2', 19, 'Series', PV, 80, ['#familia', '#recetas'], 'Salteñas jugosas: el repulgue, el horno y la paciencia.'),
+    it('Cocina con la abuela · Cap. 1', 21, 'Series', PV, 90, ['#familia', '#recetas'], 'Api morado con pastel para una mañana fría.'),
+    it('Diario de obra · Cap. 7', 15, 'Series', PV, 30, ['#casa'], 'Se vacía la losa del segundo piso.'),
+    it('Diario de obra · Cap. 6', 17, 'Series', PV, 40, ['#casa'], 'Instalación eléctrica y la primera discusión con el maestro.'),
+    it('Ruta 4 en bici · Cap. 1', 28, 'Series', PV, 120, ['#bici', '#viajes'], 'De Santa Cruz a Samaipata por la carretera antigua.'),
+    it('Ruta 4 en bici · Cap. 2', 31, 'Series', PV, 110, ['#bici', '#viajes'], 'Samaipata a Comarapa entre neblina y curvas.') ] }
+];
+const PG = 8;
+const TABS = ['Inicio', 'Explorar', 'Películas', 'Series', 'Viajes', 'Fotos'];
+const mk = (name, src, hue, spec, base = []) => {
+  const extra = spec ? spec.split(';').map((p, j) => { const [ty, t, m] = p.split('|'); return { id: 'x' + (uid++), type: ty, t, mins: +m || 0, hue: (hue + j * 23) % 360, ch: name, src, tags: ['#' + name.toLowerCase().split(' ')[0]], desc: '', prog: 0 }; }) : [];
+  const items = [...base.map(b => ({ ...b, type: 'v' })), ...extra];
+  const nv = items.filter(i => i.type === 'v').length, nf = items.length - nv;
+  return { name, src, items, meta: [nv ? `${nv} videos` : '', nf ? `${nf} fotos` : ''].filter(Boolean).join(' · ') };
+};
+const CHANNELS = [
+  mk('Mensajes guardados', 'Personal', 220, 'f|Isla Incahuasi;v|Laguna Colorada|16;f|Atardecer en Copacabana;f|La Puerta del Sol;f|Mirador de Samaipata;v|Tren a Uyuni|11;f|Llamas en el camino;f|Mercado de Tarabuco;v|Cholitas luchadoras|21;f|Teleférico rojo;f|Valle de la Luna;v|Ruta de la muerte en bici|44;f|Plaza Murillo;f|Catedral de Potosí;v|Mina del Cerro Rico|29', [ROWS[2].cards[0], ROWS[2].cards[1], ROWS[2].cards[3], ROWS[0].cards[1], ROWS[0].cards[0]]),
+  mk('Películas', 'Canal privado', 20, '', ROWS[1].cards),
+  mk('Series', 'Canal privado', 80, '', ROWS[3].cards),
+  mk('Viajes', 'Canal privado', 160, 'f|Laguna Verde;f|Cañón de Torotoro;f|Huellas de dinosaurio;v|Coroico en moto|36;v|Sucre, ciudad blanca|19;f|Convento de la Recoleta;v|Rurrenabaque en canoa|52;f|Pampas del Yacuma;f|Delfines rosados;v|Noche en el Madidi|38;f|Cascada de Coroico;f|Torotoro desde arriba', [ROWS[2].cards[2], ROWS[2].cards[4], ROWS[2].cards[5], ROWS[0].cards[3]]),
+  mk('Fotos de la familia', 'Canal privado', 330, 'f|Cumpleaños de la abuela;f|Navidad en Cochabamba;v|Bautizo de Mateo|38;f|Primos en Tarija;f|Graduación de Ana;v|Año Nuevo en casa|22;f|Almuerzo del domingo;f|La casa de Sucre;f|Bodas de oro;f|Paseo a Cotoca;v|Cumpleaños de Lucía|14;f|Día de la madre;f|Vacaciones en Samaipata;f|Foto con el abuelo Tito'),
+  mk('Carnaval 2026', 'Canal privado', 35, 'v|Precarnavalero|46;f|Comparsa en la avenida;v|Mojazón en el barrio|9;f|Reina del carnaval;f|Bandas en la plaza;f|Disfraces de los niños;v|Entrada de comparsas|58;f|Carros alegóricos', [ROWS[0].cards[0]]),
+  mk('Recetas de la familia', 'Canal privado', 70, 'v|Majadito batido|25;f|Receta escrita del api;f|Cuñapés recién salidos;v|Silpancho cochabambino|18', [ROWS[3].cards[0], ROWS[3].cards[1]]),
+  mk('Música en vivo', 'Canal privado', 280, 'v|Concierto en el Teatro al Aire Libre|94;v|Peña en Sopocachi|41;f|El charango de Julio;v|Morenada en la Entrada|33')
+];
+
+class Component extends DCLogic {
+  state = { screen: 'home', tab: 0, fr: 0, cols: [0, 0, 0, 0], offs: [0, 0, 0, 0], topCol: 0, dbtn: 0, pbtn: 1, scale: 0.5, bg: [], t: 0, buf: 0, paused: false, ctl: true, flashes: [], lensM: null, sel: ROWS[0].cards[0], exCh: 0, exArea: 'list', exGi: 0, exPi: 1, ph: 0 };
+  stageRef = React.createRef();
+  bk = 0; fk = 0; lastInput = Date.now();
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ scale: Math.min(innerWidth / 1920, innerHeight / 1080) });
+    this.onResize(); addEventListener('resize', this.onResize);
+    this.onKey = e => {
+      const m = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right', Enter: 'ok', ' ': 'ok', Escape: 'back', Backspace: 'back' };
+      if (m[e.key]) { e.preventDefault(); this.press(m[e.key]); }
+    };
+    addEventListener('keydown', this.onKey);
+    this.timer = setInterval(() => this.tick(), 250);
+    this.setState({ bg: [{ k: 0, item: ROWS[0].cards[0], dir: 'R' }] });
+    if (document.fonts) document.fonts.ready.then(() => this.measure());
+  }
+  componentWillUnmount() { removeEventListener('resize', this.onResize); removeEventListener('keydown', this.onKey); clearInterval(this.timer); }
+  componentDidUpdate() { this.measure(); }
+
+  rowsFor(tab) { const n = TABS[tab]; return n === 'Inicio' ? ROWS : ROWS.filter(r => r.name === n && n !== 'Seguir viendo'); }
+  itemAt(st) { const rows = this.rowsFor(st.tab); if (!rows.length) return null; const r = st.fr < 0 ? 0 : st.fr; return rows[r].cards[st.cols[r] || 0]; }
+  usesMeasure() { const s = this.state; return s.screen !== 'home' || s.fr < 0 || (TABS[s.tab] === 'Explorar' && s.exArea === 'pager'); }
+
+  measure() {
+    const stage = this.stageRef.current; if (!stage) return;
+    if (!this.usesMeasure()) return;
+    const el = stage.querySelector('[data-focus="1"]');
+    if (!el) { if (this.state.lensM) this.setState({ lensM: null }); return; }
+    let x = 0, y = 0, n = el;
+    while (n && n !== stage) { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+    const w = el.offsetWidth, hh = el.offsetHeight, r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 12;
+    const L = { x: x - w * .025 - 4, y: y - hh * .025 - 4, w: w * 1.05 + 8, h: hh * 1.05 + 8, r: r * 1.05 + 4 };
+    const o = this.state.lensM;
+    if (!o || ['x', 'y', 'w', 'h', 'r'].some(k => Math.abs(o[k] - L[k]) > .5)) this.setState({ lensM: L });
+  }
+
+  pushBg(n, item, dir) {
+    if (!item) return;
+    const cur = (n.bg || this.state.bg);
+    const top = cur[cur.length - 1];
+    if (top && top.item.id === item.id) return;
+    n.bg = [...cur.slice(-1), { k: ++this.bk, item, dir }];
+  }
+
+  press(k) {
+    this.lastInput = Date.now();
+    const s = this.state;
+    if (s.screen === 'player' && !s.ctl) { this.setState({ ctl: true }); return; }
+    const n = { cols: [...s.cols], offs: [...s.offs] };
+    const rows = this.rowsFor(s.tab);
+    const dirMap = { left: 'L', right: 'R', up: 'U', down: 'D' };
+    const isEx = TABS[s.tab] === 'Explorar';
+    if (s.screen === 'home') {
+      if (s.fr < 0) {
+        if (k === 'left') n.topCol = Math.max(0, s.topCol - 1);
+        if (k === 'right') n.topCol = Math.min(TABS.length + 1, s.topCol + 1);
+        if (k === 'down' && (rows.length || isEx)) n.fr = 0;
+        if (k === 'ok' && s.topCol < TABS.length && s.topCol !== s.tab) {
+          n.tab = s.topCol; n.cols = [0, 0, 0, 0]; n.offs = [0, 0, 0, 0];
+          Object.assign(n, { exCh: 0, exArea: 'list', exGi: 0 });
+          this.pushBg(n, this.itemAt({ tab: n.tab, fr: 0, cols: n.cols }), 'R');
+        }
+      } else if (isEx) {
+        const chs = CHANNELS, items = chs[s.exCh].items;
+        if (s.exArea === 'list') {
+          if (k === 'up') { if (s.exCh === 0) { n.fr = -1; n.topCol = s.tab; } else Object.assign(n, { exCh: s.exCh - 1, exGi: 0 }); }
+          if (k === 'down' && s.exCh < chs.length - 1) Object.assign(n, { exCh: s.exCh + 1, exGi: 0 });
+          if (k === 'right' || k === 'ok') n.exArea = 'grid';
+          if (k === 'back') { n.fr = -1; n.topCol = s.tab; }
+        } else {
+          const gi = s.exGi, page = Math.floor(gi / PG), loc = gi % PG, col = loc % 4, row = Math.floor(loc / 4);
+          const pages = Math.ceil(items.length / PG), pageEnd = Math.min(items.length, (page + 1) * PG);
+          if (s.exArea === 'pager') {
+            const np = pages + 2;
+            if (k === 'left') n.exPi = Math.max(0, s.exPi - 1);
+            if (k === 'right') n.exPi = Math.min(np - 1, s.exPi + 1);
+            if (k === 'up') n.exArea = 'grid';
+            if (k === 'back') n.exArea = 'list';
+            if (k === 'ok') {
+              let tp = s.exPi === 0 ? page - 1 : s.exPi === np - 1 ? page + 1 : s.exPi - 1;
+              tp = Math.max(0, Math.min(pages - 1, tp));
+              if (tp !== page) n.exGi = tp * PG;
+            }
+            this.setState(n); return;
+          }
+          let ng = gi;
+          if (k === 'left') { if (col === 0) n.exArea = 'list'; else ng = gi - 1; }
+          if (k === 'right') { if (col < 3 && gi + 1 < pageEnd) ng = gi + 1; else if (page + 1 < pages) ng = Math.min(items.length - 1, (page + 1) * PG + row * 4); }
+          if (k === 'down') { if (row === 0 && gi + 4 < pageEnd) ng = gi + 4; else if (row === 0 && pageEnd - page * PG > 4) ng = pageEnd - 1; else { n.exArea = 'pager'; n.exPi = page + 1; } }
+          if (k === 'up') { if (row === 0) { n.fr = -1; n.topCol = s.tab; } else ng = gi - 4; }
+          if (k === 'back') n.exArea = 'list';
+          n.exGi = ng;
+          if (k === 'ok') {
+            const item = items[gi];
+            if (item.type === 'f') { n.screen = 'photo'; n.ph = items.filter(x => x.type === 'f').indexOf(item); }
+            else { n.screen = 'detail'; n.dbtn = 0; n.sel = item; }
+            this.pushBg(n, item, 'R');
+          }
+        }
+      } else {
+        const r = s.fr, len = rows[r].cards.length;
+        if (k === 'left' || k === 'right') {
+          const c = Math.max(0, Math.min(len - 1, s.cols[r] + (k === 'left' ? -1 : 1)));
+          n.cols[r] = c;
+          if (c - n.offs[r] > 2) n.offs[r] = c - 2;
+          if (c < n.offs[r]) n.offs[r] = c;
+        }
+        if (k === 'up') { if (r === 0) { n.fr = -1; n.topCol = s.tab; } else n.fr = r - 1; }
+        if (k === 'down') n.fr = Math.min(rows.length - 1, r + 1);
+        if (k === 'ok') { n.screen = 'detail'; n.dbtn = 0; n.sel = this.itemAt(s); }
+        if (k === 'back') { n.fr = -1; n.topCol = s.tab; }
+        if (dirMap[k]) this.pushBg(n, this.itemAt({ ...s, ...n, fr: n.fr ?? s.fr }), dirMap[k]);
+      }
+    } else if (s.screen === 'detail') {
+      const nb = s.sel.prog ? 2 : 1;
+      if (k === 'left') n.dbtn = Math.max(0, s.dbtn - 1);
+      if (k === 'right') n.dbtn = Math.min(nb - 1, s.dbtn + 1);
+      if (k === 'back') n.screen = 'home';
+      if (k === 'ok') {
+        const tot = s.sel.mins * 60, t0 = (s.sel.prog && s.dbtn === 0) ? s.sel.prog * tot : 0;
+        Object.assign(n, { screen: 'player', pbtn: 1, t: t0, buf: Math.min(tot, t0 + tot * .18), paused: false, ctl: true });
+      }
+    } else if (s.screen === 'photo') {
+      const photos = CHANNELS[s.exCh].items.filter(x => x.type === 'f');
+      if (k === 'left' || k === 'right') {
+        const p = Math.max(0, Math.min(photos.length - 1, s.ph + (k === 'left' ? -1 : 1)));
+        if (p !== s.ph) { n.ph = p; this.pushBg(n, photos[p], k === 'left' ? 'L' : 'R'); }
+      }
+      if (k === 'back' || k === 'ok') n.screen = 'home';
+    } else if (s.screen === 'player') {
+      if (k === 'left') n.pbtn = Math.max(0, s.pbtn - 1);
+      if (k === 'right') n.pbtn = Math.min(2, s.pbtn + 1);
+      if (k === 'back') n.screen = 'detail';
+      if (k === 'ok') {
+        if (s.pbtn === 1) n.paused = !s.paused;
+        else this.seek(n, s.pbtn === 0 ? -10 : 10);
+      }
+    }
+    this.setState(n);
+  }
+
+  seek(n, d) {
+    const s = this.state, tot = s.sel.mins * 60;
+    n.t = Math.max(0, Math.min(tot, s.t + d));
+    const f = { k: ++this.fk, txt: d > 0 ? '+10 s' : '−10 s', side: d > 0 ? 1 : -1 };
+    n.flashes = [...s.flashes, f];
+    setTimeout(() => this.setState(st => ({ flashes: st.flashes.filter(x => x.k !== f.k) })), 800);
+  }
+
+  tick() {
+    const s = this.state;
+    if (s.screen !== 'player') return;
+    const tot = s.sel.mins * 60, n = {};
+    if (!s.paused) { n.t = Math.min(tot, s.t + .25); n.buf = Math.min(tot, Math.max(s.buf, n.t + 20) + 2); }
+    if (!s.paused && s.ctl && Date.now() - this.lastInput > 4000) n.ctl = false;
+    if (Object.keys(n).length) this.setState(n);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const accent = this.props.accent ?? '#F2A93B';
+    const expressive = (this.props.motion ?? 'Expresivo') === 'Expresivo';
+    const showRemote = this.props.showRemote ?? true;
+    const home = s.screen === 'home', detail = s.screen === 'detail', player = s.screen === 'player';
+    const rowsData = this.rowsFor(s.tab);
+    const frEff = s.fr < 0 ? 0 : s.fr;
+    const LIGHT = '#F3F2EF', INK = '#111114';
+    const rows = rowsData.map((r, i) => {
+      const y = home ? ROWY + (i - frEff) * ROWP : ROWY + 640;
+      const o = !home ? 0 : i < frEff ? 0 : i === frEff ? 1 : i === frEff + 1 ? .55 : .25;
+      const focusedRow = home && s.fr === i;
+      return {
+        name: r.name, src: r.src, tf: `translateY(${y}px)`, o: String(o),
+        counter: focusedRow ? `${s.cols[i] + 1} / ${r.cards.length}` : '',
+        cards: r.cards.map((c, j) => {
+          const x = X0 + (j - s.offs[i]) * PITCH;
+          const f = focusedRow && s.cols[i] === j;
+          return {
+            t: c.t, d: fmtMin(c.mins), ph: 'portada · ' + c.t, bg: stripes(c.hue, 14),
+            tf: `translateX(${x}px) scale(${f ? 1.05 : 1})`, o: x < X0 - 20 ? '0' : '1',
+            hasP: c.prog > 0, pw: Math.round(c.prog * 100) + '%',
+            tw: f ? 700 : 600, tc: f ? LIGHT : '#A9A8B0'
+          };
+        })
+      };
+    });
+
+    const isEx = TABS[s.tab] === 'Explorar', photo = s.screen === 'photo';
+    const exFocus = home && isEx && s.fr >= 0;
+    let lens;
+    if (exFocus) {
+      let x, y, w, hh, r;
+      if (s.exArea === 'list') { x = 96; y = 230 + s.exCh * 98; w = 520; hh = 88; r = 14; }
+      else { const l = s.exGi % PG; x = 680 + (l % 4) * 292; y = 300 + Math.floor(l / 4) * 217; w = 268; hh = 151; r = 12; }
+      lens = s.exArea === 'pager' ? s.lensM : { x: x - w * .025 - 4, y: y - hh * .025 - 4, w: w * 1.05 + 8, h: hh * 1.05 + 8, r: r * 1.05 + 4 };
+    } else if (home && s.fr >= 0 && rowsData.length) {
+      const x = X0 + (s.cols[s.fr] - s.offs[s.fr]) * PITCH, y = ROWY + 52;
+      lens = { x: x - CW * .025 - 4, y: y - CH * .025 - 4, w: CW * 1.05 + 8, h: CH * 1.05 + 8, r: 12 * 1.05 + 4 };
+    } else lens = s.lensM;
+    const lensVisible = !!lens && !(player && !s.ctl);
+    lens = lens || { x: 96, y: 548, w: 346, h: 203, r: 16 };
+    const lensTr = expressive
+      ? 'left 440ms cubic-bezier(.34,1.5,.55,1), top 500ms cubic-bezier(.34,1.35,.55,1), width 380ms cubic-bezier(.3,1.3,.5,1), height 420ms cubic-bezier(.3,1.3,.5,1), border-radius 320ms ease, opacity 300ms ease'
+      : 'left 240ms cubic-bezier(.2,.8,.2,1), top 240ms cubic-bezier(.2,.8,.2,1), width 240ms cubic-bezier(.2,.8,.2,1), height 240ms cubic-bezier(.2,.8,.2,1), border-radius 240ms ease, opacity 300ms ease';
+
+    const topFocus = home && s.fr < 0;
+    const tabs = TABS.map((name, i) => {
+      const f = topFocus && s.topCol === i, sel = s.tab === i;
+      return { name, foc: f ? '1' : '0', w: sel || f ? 700 : 500, fg: f ? INK : sel ? LIGHT : '#A9A8B0', bg: f ? LIGHT : 'transparent', tf: f ? 'scale(1.05)' : 'none', bar: sel && !f ? LIGHT : 'transparent' };
+    });
+    const circ = i => { const f = topFocus && s.topCol === i; return { foc: f ? '1' : '0', bg: f ? LIGHT : (i === TABS.length ? '#25252B' : '#3A3A42'), fg: f ? INK : LIGHT, tf: f ? 'scale(1.05)' : 'none' }; };
+    const sc = circ(TABS.length), av = circ(TABS.length + 1);
+    const exC = CHANNELS[s.exCh];
+    const exChannels = CHANNELS.map((c, i) => {
+      const f = exFocus && s.exArea === 'list' && s.exCh === i, sel = s.exCh === i;
+      return { name: c.name, meta: c.meta, bg: f ? LIGHT : sel ? '#24242A' : 'transparent', fg: f ? INK : LIGHT, mc: f ? '#3A3A42' : '#A9A8B0', tf: f ? 'scale(1.05)' : 'none' };
+    });
+    const exPage = Math.floor(s.exGi / PG), exNP = Math.ceil(exC.items.length / PG);
+    const exPages = [];
+    exC.items.forEach((it, j) => {
+      const f = exFocus && s.exArea === 'grid' && s.exGi === j, p = Math.floor(j / PG);
+      (exPages[p] = exPages[p] || { o: p === exPage ? '1' : '0', items: [] }).items.push({ t: it.t, badge: it.type === 'f' ? 'Foto' : fmtMin(it.mins), ph: (it.type === 'f' ? 'foto · ' : 'portada · ') + it.t, bg: stripes(it.hue, 14), tf: f ? 'scale(1.05)' : 'none', tw: f ? 700 : 600, tc: f ? LIGHT : '#A9A8B0' });
+    });
+    const pgF = i => exFocus && s.exArea === 'pager' && s.exPi === i;
+    const pgBtn = (label, i, cur, dis) => { const f = pgF(i); return { label, foc: f ? '1' : '0', bg: f ? LIGHT : cur ? '#2E2E35' : '#1E1E24', fg: f ? INK : dis ? '#6E6D76' : LIGHT, w: cur || f ? 800 : 600, tf: f ? 'scale(1.05)' : 'none', bar: cur && !f ? 'var(--accent,#F2A93B)' : 'transparent' }; };
+    const exPager = [pgBtn('◀ Anterior', 0, false, exPage === 0), ...Array.from({ length: exNP }, (_, i) => pgBtn(String(i + 1), i + 1, i === exPage, false)), pgBtn('Siguiente ▶', exNP + 1, false, exPage >= exNP - 1)];
+    const photos = exC.items.filter(x => x.type === 'f');
+    const phItem = photos[s.ph] || photos[0];
+
+    const D = expressive ? 620 : 380, S = expressive ? 55 : 30, W = expressive ? 820 : 450;
+    const bgEls = s.bg.map((b, i, arr) => h('div', { key: b.k, style: { position: 'absolute', inset: 0, overflow: 'hidden', animation: (i === arr.length - 1 && arr.length > 1) ? `mcWipe${b.dir} ${W}ms cubic-bezier(.7,0,.2,1) both` : 'none' } },
+      h('div', { style: { position: 'absolute', inset: '-48px', background: stripes(b.item.hue, 22), animation: 'mcDrift 24s ease-in-out infinite alternate' } }),
+      h('div', { style: { position: 'absolute', right: 160, top: 250, fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: '#A3A2AB', background: 'rgba(14,14,17,.7)', padding: '8px 14px', borderRadius: 8 } }, (player ? 'video · ' : b.item.type === 'f' ? 'foto · ' : 'portada · ') + b.item.t)));
+    const backdrop = h('div', { style: { position: 'absolute', inset: 0 } }, bgEls);
+
+    const infoItem = home && !isEx ? this.itemAt(s) : detail ? s.sel : null;
+    let info = null;
+    if (infoItem) {
+      const rise = i => ({ animation: `mcRise ${D}ms cubic-bezier(.2,.9,.2,1) ${i * S}ms both` });
+      const words = infoItem.t.split(' ');
+      const big = detail;
+      const left = infoItem.prog ? Math.round(infoItem.mins * (1 - infoItem.prog)) : 0;
+      info = h('div', { key: s.screen + infoItem.id, style: { position: 'absolute', left: 96, top: big ? 170 : 150, width: big ? 1100 : 960, display: 'flex', flexDirection: 'column', gap: big ? 26 : 18 } },
+        h('div', { style: { fontSize: 26, fontWeight: 600, color: '#D6D5DA', ...rise(0) } }, `${infoItem.ch} · ${infoItem.src}`),
+        h('div', { style: { fontSize: big ? 80 : 64, fontWeight: 800, letterSpacing: big ? -2 : -1.5, lineHeight: 1.04, display: 'flex', flexWrap: 'wrap', columnGap: '0.24em' } },
+          words.map((w, i) => h('span', { key: i, style: { display: 'inline-block', ...rise(1 + i * .6) } }, w))),
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: 24, fontSize: 28, color: '#D6D5DA', ...rise(2 + words.length * .6) } },
+          h('span', null, fmtMin(infoItem.mins)),
+          infoItem.prog ? h('div', { style: { position: 'relative', width: 320, height: 8, borderRadius: 4, background: '#34343C' } }, h('div', { style: { position: 'absolute', left: 0, top: 0, bottom: 0, width: `${infoItem.prog * 100}%`, borderRadius: 4, background: 'var(--accent,#F2A93B)' } })) : null,
+          infoItem.prog ? h('span', null, `Quedan ${left} min`) : null),
+        h('div', { style: { display: 'flex', gap: 14, ...rise(3 + words.length * .6) } },
+          infoItem.tags.map(tg => h('div', { key: tg, style: { height: 48, padding: '0 20px', borderRadius: 24, background: 'rgba(37,37,43,.85)', border: '2px solid #3A3A42', display: 'flex', alignItems: 'center', fontSize: 24, fontWeight: 600 } }, tg))));
+    }
+
+    const dLabels = s.sel.prog ? ['Reanudar', 'Desde el inicio'] : ['Reproducir'];
+    const dBtns = dLabels.map((label, i) => { const f = detail && s.dbtn === i; return { label, play: i === 0, foc: f ? '1' : '0', bg: f ? LIGHT : '#25252B', fg: f ? INK : LIGHT, tf: f ? 'scale(1.05)' : 'none' }; });
+
+    const tot = s.sel.mins * 60;
+    const pBtns = [{ label: '−10' }, { label: '' }, { label: '+10' }].map((b, i) => {
+      const f = player && s.pbtn === i;
+      return { label: b.label, isPause: i === 1 && !s.paused, isPlay: i === 1 && s.paused, foc: f ? '1' : '0', bg: f ? LIGHT : 'rgba(37,37,43,.92)', fg: f ? INK : LIGHT, tf: f ? 'scale(1.05)' : 'none' };
+    });
+    const pVis = player && s.ctl;
+    const flashes = h('div', { style: { position: 'absolute', inset: 0, pointerEvents: 'none' } },
+      s.flashes.map(f => h('div', { key: f.k, style: { position: 'absolute', left: 960 + f.side * 200 - 70, bottom: 230, width: 140, textAlign: 'center', fontSize: 40, fontWeight: 800, color: 'var(--accent,#F2A93B)', animation: 'mcPop 800ms cubic-bezier(.2,.9,.2,1) both' } }, f.txt)));
+
+    let hints;
+    if (photo) hints = [{ k: '◀ ▶', t: 'Anterior / siguiente' }, { k: 'Atrás', t: 'Volver' }];
+    else if (exFocus && s.exArea === 'list') hints = [{ k: '▲ ▼', t: 'Canales' }, { k: '▶', t: 'Ver contenido' }, { k: 'Atrás', t: 'Menú' }];
+    else if (exFocus && s.exArea === 'pager') hints = [{ k: '◀ ▶', t: 'Páginas' }, { k: 'OK', t: 'Ir' }, { k: '▲', t: 'Contenido' }];
+    else if (exFocus) hints = [{ k: '▲ ▼ ◀ ▶', t: 'Explorar · ▶ al borde: página siguiente' }, { k: 'OK', t: exC.items[s.exGi].type === 'f' ? 'Ver foto' : 'Ver detalle' }, { k: 'Atrás', t: 'Canales' }];
+    else if (home && s.fr < 0) hints = [{ k: '◀ ▶', t: 'Pestañas' }, { k: 'OK', t: 'Abrir' }, { k: '▼', t: 'Catálogo' }];
+    else if (home) hints = [{ k: '▲ ▼ ◀ ▶', t: 'Explorar' }, { k: 'OK', t: 'Ver detalle' }, { k: 'Atrás', t: 'Menú' }];
+    else if (detail) hints = [{ k: '◀ ▶', t: 'Elegir' }, { k: 'OK', t: dLabels[s.dbtn] }, { k: 'Atrás', t: 'Volver' }];
+    else hints = [{ k: '◀ ▶', t: 'Elegir' }, { k: 'OK', t: s.pbtn === 1 ? (s.paused ? 'Reanudar' : 'Pausa') : 'Saltar 10 s' }, { k: 'Atrás', t: 'Salir' }];
+
+    const go = k => () => this.press(k);
+    return {
+      accent, showRemote, stageRef: this.stageRef, scale: s.scale,
+      backdrop, info, rows, tabs, flashes, hints,
+      isEmpty: home && !rowsData.length && !isEx,
+      isExplore: home && isEx, exO: home && isEx ? '1' : '0', exChannels, exPages, exPager, exX: -exPage * 1240, exPageTxt: `Página ${exPage + 1} de ${exNP} · ${exC.items.length} elementos`,
+      exName: exC.name, exMeta: `${exC.src} · ${exC.meta}`,
+      isPhoto: photo, phTitle: phItem ? phItem.t : '', phCh: exC.name, phCount: `${s.ph + 1} / ${photos.length}`,
+      dimO: home ? '1' : detail ? '.4' : '0', leftO: player || photo ? '0' : '1', bottomO: home ? '1' : detail ? '.55' : '0',
+      topO: home ? '1' : '0', topY: home ? 0 : -24,
+      searchFoc: sc.foc, searchBg: sc.bg, searchFg: sc.fg, searchTf: sc.tf,
+      avFoc: av.foc, avBg: av.bg, avFg: av.fg, avTf: av.tf,
+      sel: s.sel, dBtns, dO: detail ? '1' : '0', dY: detail ? 0 : 60,
+      pBtns, pO: pVis ? '1' : '0', pY: pVis ? 0 : 40,
+      pPlay: (s.t / tot * 100).toFixed(2) + '%', pBuf: (s.buf / tot * 100).toFixed(2) + '%', tCur: fmtT(s.t), tTot: fmtT(tot),
+      lx: lens.x, ly: lens.y, lw: lens.w, lh: lens.h, lr: lens.r, lo: lensVisible ? '1' : '0', lensTr,
+      hTop: home ? 'auto' : '54px', hBot: home ? '54px' : 'auto', hO: (player && !s.ctl) ? '0' : '1',
+      onUp: go('up'), onDown: go('down'), onLeft: go('left'), onRight: go('right'), onOk: go('ok'), onBack: go('back')
+    };
+  }
+}
+</script>
+</body>
+</html>
